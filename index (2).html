@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Информатика: от бита до операционной системы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070B1C;--ink:#EAF0FF;--blue:#4DE1FF;--vio:#8B5CFF;--mut:#98A3C7;--line:rgba(160,175,255,.18);--card:rgba(255,255,255,.05);--pop:#FF7AD9}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 'Golos Text',system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(60vw 50vw at 88% 8%,rgba(139,92,255,.30),transparent 70%),radial-gradient(55vw 50vw at 0% 55%,rgba(77,225,255,.15),transparent 70%),radial-gradient(40vw 40vw at 70% 100%,rgba(255,122,217,.12),transparent 70%)}
+h1,h2,h3{font-family:'Unbounded',sans-serif;font-weight:500;line-height:1.15;letter-spacing:-.02em}
+h1{font-size:clamp(34px,6vw,76px);font-weight:300}
+h2{font-size:clamp(26px,3.6vw,46px);margin-bottom:18px}
+h3{font-size:17px;margin-bottom:6px}
+p{color:var(--mut);max-width:56ch}
+nav{position:fixed;top:0;left:0;right:0;z-index:9;display:flex;gap:26px;padding:16px 5vw;background:rgba(7,11,28,.68);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);font-size:14px}
+nav a{color:var(--ink);text-decoration:none;opacity:.6}nav a:hover{opacity:1}
+nav b{margin-right:auto;font-family:'Unbounded';font-weight:500}
+section{position:relative;min-height:100vh;padding:110px 5vw 70px;display:grid;grid-template-columns:1fr 1fr;gap:4vw;align-items:center;overflow:hidden}
+section[data-g]::before{content:attr(data-g);position:absolute;right:3vw;top:70px;font:500 clamp(80px,17vw,240px)/1 'Unbounded';color:transparent;-webkit-text-stroke:1px rgba(160,175,255,.13);pointer-events:none}
+section>*{position:relative}
+.wide{grid-column:1/-1;margin-top:10px}
+.hero{grid-template-columns:1fr}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero .t{z-index:2;max-width:640px;pointer-events:none}
+.hero p{margin-top:24px;font-size:19px}
+.hero .who{margin-top:14px;font-size:14px}
+.stats{position:absolute!important;left:5vw;bottom:64px;display:flex;gap:14px;flex-wrap:wrap;z-index:2}
+.stats div{padding:14px 20px;border-radius:16px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(8px);font-size:13px;color:var(--mut)}
+.stats b{display:block;font:500 24px 'Unbounded';color:var(--ink)}
+.scroll{position:absolute!important;bottom:24px;left:5vw;font-size:13px;color:var(--mut)}
+canvas.c3{width:100%;height:min(70vh,560px);display:block}
+.flip{direction:rtl}.flip>*{direction:ltr}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 12px}
+button{font:500 14px 'Golos Text';border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:99px;cursor:pointer;transition:.2s}
+button:hover{border-color:var(--blue)}
+button.on{background:linear-gradient(135deg,var(--vio),var(--blue));color:#070B1C;border-color:transparent}
+.desc{min-height:92px;padding:18px 20px;background:var(--card);border-radius:18px;border:1px solid var(--line);max-width:520px;backdrop-filter:blur(8px)}
+.desc b{color:var(--blue)}
+.chain{display:flex;flex-wrap:wrap;gap:6px;margin:22px 0;align-items:center}
+.chain span{padding:8px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:14px}
+.chain i{color:var(--blue);font-style:normal}
+.bits{display:flex;gap:6px;margin:16px 0}
+.bit{width:44px;height:58px;border-radius:12px;display:grid;place-items:center;font:500 20px 'Unbounded';padding:0}
+.bit.on{background:var(--blue);border-color:var(--blue);color:#070B1C;box-shadow:0 0 28px rgba(77,225,255,.55)}
+.out{display:flex;gap:26px;flex-wrap:wrap}.out em{display:block;font-style:normal;color:var(--mut);font-size:12px;font-weight:400}
+.out strong{font:500 28px 'Unbounded'}
+.tl{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.tl div{flex:1;min-width:130px;padding:14px;border-radius:14px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--vio);font-size:14px;color:var(--mut)}
+.tl div b{display:block;color:var(--ink);font-family:'Unbounded';font-size:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.cards div{padding:20px;border-radius:18px;background:var(--card);border:1px solid var(--line);font-size:14px;color:var(--mut);line-height:1.5;backdrop-filter:blur(8px)}
+.cards div b{display:block;font:500 16px 'Unbounded';color:var(--ink);margin-bottom:8px}
+.cards svg{width:34px;height:34px;margin-bottom:12px;stroke:var(--blue);fill:none;stroke-width:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chips span{padding:7px 14px;border-radius:99px;border:1px solid var(--line);font-size:13px;color:var(--ink);background:rgba(139,92,255,.12)}
+.hist{display:flex;gap:0;border-top:2px solid var(--line);margin-top:18px;overflow-x:auto}
+.hist div{flex:1;min-width:170px;padding:22px 16px 0 0;position:relative;font-size:14px;color:var(--mut)}
+.hist div::before{content:"";position:absolute;top:-8px;left:0;width:14px;height:14px;border-radius:50%;background:var(--blue);box-shadow:0 0 18px var(--blue)}
+.hist b{display:block;font:500 22px 'Unbounded';color:var(--ink)}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px;max-width:520px}
+.key{background:var(--card);border:1px solid var(--line);border-bottom:4px solid var(--vio);border-radius:12px;padding:12px 8px;text-align:center;font-size:12px;color:var(--mut)}
+.key kbd{display:block;font:500 15px 'Unbounded';color:var(--ink);margin-bottom:4px}
+.os{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;max-width:560px}
+.os div{padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--mut)}
+.os b{display:block;color:var(--ink);font-size:14px}
+footer{padding:50px 5vw;text-align:center;color:var(--mut);font-size:14px;border-top:1px solid var(--line)}
+@media(max-width:860px){section{grid-template-columns:1fr}.flip{direction:ltr}nav a{display:none}.keys{grid-template-columns:repeat(2,1fr)}.stats{display:none!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+</style>
+</head>
+<body>
+<nav><b>Информатика</b><a href="#s1">Наука</a><a href="#s2">Архитектура</a><a href="#s3">Программы</a></nav>
+
+<section class="hero">
+<canvas id="c0"></canvas>
+<div class="t">
+<h1>Информатика: от бита до системы</h1>
+<p>Три лекции в одной странице: как возникла наука об информации, как устроен компьютер и какие программы им управляют.</p>
+<p class="who">Двигайте мышью: модели живые.</p>
+</div>
+<div class="stats"><div><b>1946</b>год ENIAC</div><div><b>8 бит</b>в одном байте</div><div><b>4</b>поколения ЭВМ</div><div><b>3</b>вида ПО</div></div>
+<div class="scroll">Листайте вниз ↓</div>
+</section>
+
+<section id="s1" data-g="Наука">
+<div>
+<h2>Информатика — фундаментальная наука</h2>
+<p>Термин родился во Франции в 60-х годах XX века из слов «информация» и «автоматика». Предмет науки — информация и информационные процессы.</p>
+<div class="chain"><span>Сбор</span><i>→</i><span>Передача</span><i>→</i><span>Хранение</span><i>→</i><span>Обработка</span><i>→</i><span>Доведение до пользователя</span></div>
+<div class="tl" id="tl"></div>
+</div>
+<div>
+<canvas id="c1" class="c3" style="height:190px"></canvas>
+<h3>Бит — минимальная единица информации</h3>
+<p>Нажимайте на биты: 8 бит образуют байт. Так компьютер записывает любое число.</p>
+<div class="bits" id="bits"></div>
+<div class="out"><div><em>десятичная</em><strong id="vd">0</strong></div><div><em>восьмеричная</em><strong id="vo">0</strong></div><div><em>шестнадцатеричная</em><strong id="vh">0</strong></div></div>
+<p style="margin-top:18px;font-size:15px">1 байт = 8 бит · 1 Кбайт = 1024 байт · 1 Мбайт = 1024 Кбайт</p>
+</div>
+<div class="wide">
+<div class="cards">
+<div><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10"/><path d="M16 10v6l4 3"/></svg><b>Свой предмет</b>Информация и информационные процессы.</div>
+<div><svg viewBox="0 0 32 32"><rect x="5" y="5" width="22" height="22" rx="3"/><path d="M5 12h22M12 5v22"/></svg><b>Своя методология</b>Собственные понятия и методы исследования.</div>
+<div><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="4"/><circle cx="16" cy="16" r="11"/></svg><b>Универсальность</b>Применяется в естественных, технических и гуманитарных науках.</div>
+<div><svg viewBox="0 0 32 32"><path d="M5 24l7-8 5 4 10-13"/><path d="M21 7h6v6"/></svg><b>Динамика</b>Рождает новые направления: ИИ, анализ данных, кибербезопасность.</div>
+</div>
+<div class="chips"><span>Теоретическая информатика</span><span>Программное обеспечение</span><span>Аппаратное обеспечение</span><span>Базы данных</span><span>Компьютерные сети</span><span>Искусственный интеллект</span><span>Информационная безопасность</span><span>Человек и компьютер</span><span>Анализ данных</span></div>
+</div>
+</section>
+
+<section id="s2" class="flip" data-g="Железо">
+<div>
+<canvas id="c2" class="c3"></canvas>
+</div>
+<div>
+<h2>Архитектура компьютера</h2>
+<p>Принципы цифровых машин сформулировали Джон фон Нейман, Голдстайн и Беркс. Первая практическая реализация — ламповый ENIAC, 1946 год.</p>
+<div class="btns" id="b2"></div>
+<div class="desc" id="d2"></div>
+<div class="tl" id="gen"></div>
+</div>
+<div class="wide"><div class="hist">
+<div><b>1642</b>Блез Паскаль строит суммирующую машину</div>
+<div><b>1673</b>Лейбниц делает механический арифмометр</div>
+<div><b>1830</b>Бэббидж проектирует аналитическую машину с перфокартами</div>
+<div><b>1930</b>Тьюринг и Пост закладывают теорию универсальных машин</div>
+<div><b>1946</b>ENIAC — первый универсальный компьютер на лампах</div>
+</div></div>
+</section>
+
+<section id="s3" data-g="Софт">
+<div>
+<h2>Программное обеспечение и Windows</h2>
+<p>Компьютер состоит из аппаратуры (hardware) и программ (software). Программы делятся на системные, прикладные и инструментальные.</p>
+<div class="btns" id="b3"></div>
+<div class="desc" id="d3"></div>
+<div class="os">
+<div><b>Однозадачные</b>MS DOS</div><div><b>Многозадачные</b>UNIX, OS/2, Windows 95/98/2000</div><div><b>Сетевые</b>Novell NetWare, Windows NT</div>
+</div>
+<div class="keys">
+<div class="key"><kbd>Ctrl C</kbd>копировать</div><div class="key"><kbd>Ctrl V</kbd>вставить</div><div class="key"><kbd>Ctrl Z</kbd>отменить</div><div class="key"><kbd>Ctrl S</kbd>сохранить</div>
+<div class="key"><kbd>Ctrl F</kbd>поиск</div><div class="key"><kbd>Ctrl A</kbd>выделить всё</div><div class="key"><kbd>F2</kbd>переименовать</div><div class="key"><kbd>Win E</kbd>Проводник</div>
+</div>
+</div>
+<div><canvas id="c3" class="c3"></canvas></div>
+<div class="wide">
+<div class="cards">
+<div><svg viewBox="0 0 32 32"><rect x="5" y="6" width="22" height="16" rx="2"/><path d="M11 27h10M16 22v5"/></svg><b>Системное</b>Организует обработку информации и создаёт среду для других программ: ОС, сервисные программы, системы программирования.</div>
+<div><svg viewBox="0 0 32 32"><rect x="6" y="5" width="20" height="22" rx="2"/><path d="M11 12h10M11 17h10M11 22h6"/></svg><b>Прикладное</b>Решает задачи пользователя: тексты, таблицы, презентации, интернет.</div>
+<div><svg viewBox="0 0 32 32"><path d="M20 6l6 6-14 14H6v-6z"/></svg><b>Инструментальное</b>Инструменты для создания других программ.</div>
+</div>
+<div class="chips"><span>.docx текст</span><span>.xlsx Excel</span><span>.pptx PowerPoint</span><span>.jpg .png графика</span><span>.mp3 .wav звук</span><span>.zip .rar архивы</span><span>.exe программа</span><span>.pdf документ</span><span>.html сайт</span></div>
+</div>
+</section>
+<footer>Информатика · три лекции · 3D на three.js</footer>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),M={x:0,y:0};
+addEventListener('pointermove',e=>{M.x=e.clientX/innerWidth-.5;M.y=e.clientY/innerHeight-.5});
+const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- 3D helper ---------- */
+function stage(id,build){
+  const c=$(id),R=new THREE.WebGLRenderer({canvas:c,antialias:true,alpha:true});
+  R.setPixelRatio(Math.min(devicePixelRatio,2));
+  const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(38,1,.1,100),G=new THREE.Group();
+  C.position.set(0,0,10);S.add(G,new THREE.AmbientLight(0xffffff,.75));
+  const L=new THREE.DirectionalLight(0xffffff,.9);L.position.set(4,6,5);S.add(L);
+  const api=build(G,C)||{};let vis=false,t=0;
+  const rs=()=>{const w=c.clientWidth,h=c.clientHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix();};
+  new ResizeObserver(rs).observe(c);rs();
+  new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(c);
+  (function loop(){requestAnimationFrame(loop);if(!vis)return;t+=calm?0:.01;api.tick&&api.tick(t,G);R.render(S,C);})();
+  return api;
+}
+const mat=(c,o={})=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.45,metalness:.2},o));
+function box(g,w,h,d,c,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.set(x,y,z);g.add(m);return m;}
+function glow(list,on){list.forEach(m=>{m.material.emissive.set(on?0x4DE1FF:0x000000);m.material.emissiveIntensity=on?.9:0;});}
+
+/* ---------- Hero: облако битов ---------- */
+stage('c0',(G)=>{
+  const N=1800,p=new Float32Array(N*3);
+  for(let i=0;i<N;i++){const ph=Math.acos(1-2*(i+.5)/N),th=Math.PI*(1+Math.sqrt(5))*(i+.5);
+    p.set([3.3*Math.sin(ph)*Math.cos(th),3.3*Math.cos(ph),3.3*Math.sin(ph)*Math.sin(th)],i*3);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  G.add(new THREE.Points(g,new THREE.PointsMaterial({color:0x4DE1FF,size:.07})));
+  const ico=new THREE.Mesh(new THREE.IcosahedronGeometry(2.1,1),new THREE.MeshBasicMaterial({color:0x8B5CFF,wireframe:true,transparent:true,opacity:.45}));G.add(ico);
+  const core=new THREE.Mesh(new THREE.OctahedronGeometry(.9),mat(0x8B5CFF,{emissive:0x8B5CFF,emissiveIntensity:.6}));G.add(core);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(4.2,.012,8,160),new THREE.MeshBasicMaterial({color:0xFF7AD9}));ring.rotation.x=1.2;G.add(ring);
+  return{tick(t){G.position.x=innerWidth>900?3:0;G.rotation.y=t*.35+M.x*1.5;G.rotation.x=M.y*.8;core.rotation.y=-t;ico.rotation.x=t*.2;}};
+});
+
+/* ---------- Материнская плата ---------- */
+const parts2={
+  cpu:['Процессор','Главный исполнитель: <b>устройство управления</b> разбирает команды программы, а арифметико-логическое устройство выполняет вычисления.'],
+  ram:['Память','Хранит программу и данные, с которыми компьютер работает прямо сейчас. Процессор берёт команды именно оттуда.'],
+  bus:['Шина','Универсальные связи, по которым данные бегут между устройствами. Модульный принцип: меняем блоки — меняем характеристики.'],
+  io:['Ввод-вывод','Периферия: клавиатура, мышь, монитор, принтер, внешняя память. Через неё человек общается с машиной.']
+};
+const gens=[['I','1950–59','электронные лампы','МЭСМ, БЭСМ'],['II','1960–69','полупроводники','БЭСМ-6, Минск-2'],['III','1970–85','интегральные схемы','IBM 360/370, ЕС ЭВМ'],['IV','с 1980-х','микропроцессоры','персональные компьютеры']];
+$('gen').innerHTML=gens.map(g=>`<div class="on"><b>${g[0]} поколение</b>${g[1]}<br>${g[2]}<br>${g[3]}</div>`).join('');
+const s2=stage('c2',(G,C)=>{
+  C.position.set(0,2,11);G.rotation.x=.55;
+  const P={cpu:[],ram:[],bus:[],io:[]};
+  box(G,7.4,.2,4.8,0x16224F,0,0,0);
+  P.cpu.push(box(G,1.4,.22,1.4,0xC9D3EA,0,.2,0),box(G,1,.14,1,0xEEF2FB,0,.36,0));
+  P.ram.push(box(G,.16,1,2.4,0x4DE1FF,2.5,.6,0),box(G,.16,1,2.4,0x4DE1FF,2.85,.6,0),box(G,.16,1,2.4,0x7C98FF,3.2,.6,0));
+  P.io.push(box(G,.9,.6,2.6,0xC9D3EA,-3.3,.4,0),box(G,.5,.3,.8,0x2A3566,-2.2,.25,-1.7),box(G,.5,.3,.8,0x2A3566,-2.2,.25,1.7));
+  const packets=[];
+  for(let k=-1;k<=1;k++){
+    P.bus.push(box(G,1.3,.04,.06,0xFF7AD9,1.55,.14,k*.35),box(G,1.6,.04,.06,0xFF7AD9,-1.5,.14,k*.35));
+    const s=new THREE.Mesh(new THREE.SphereGeometry(.07),new THREE.MeshBasicMaterial({color:0xffffff}));G.add(s);packets.push([s,k]);
+  }
+  $('b2').innerHTML=Object.keys(parts2).map(k=>`<button data-k="${k}">${parts2[k][0]}</button>`).join('');
+  const pick=k=>{Object.keys(P).forEach(n=>glow(P[n],n===k));$('d2').innerHTML=`<b>${parts2[k][0]}.</b> ${parts2[k][1]}`;
+    document.querySelectorAll('#b2 button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));};
+  $('b2').onclick=e=>e.target.dataset.k&&pick(e.target.dataset.k);pick('cpu');
+  return{tick(t){G.rotation.y=Math.sin(t*.5)*.6+M.x*1.2;
+    packets.forEach(([s,k],i)=>{const f=(t*.6+i*.3)%1;s.position.set(.7+f*1.7,.2,k*.35);if(i%2)s.position.x=-.7-f*2;});}};
+});
+
+/* ---------- Слои ПО ---------- */
+const lay=[['Оборудование','Hardware: процессор, память, устройства. Фундамент, на котором всё работает.',0x2A3566],
+['Операционная система','Управляет обработкой информации и связывает аппаратуру с пользователем: загружает программы в память и контролирует их.',0x8B5CFF],
+['Сервисные программы','Оболочки, утилиты и антивирусы: расширяют возможности ОС, защищают и восстанавливают данные.',0x4DE1FF],
+['Прикладные программы','Пакеты для задач пользователя: тексты, таблицы, презентации, интернет.',0xC9D3EA]];
+stage('c3',(G,C)=>{
+  C.position.set(0,1,12);G.position.y=-1.6;G.rotation.x=.45;
+  const pl=lay.map((l,i)=>{const m=box(G,4.4,.32,4.4,l[2],0,i*.85,0);return m;});
+  const wins=[[-1,-.8],[.8,.4],[-.3,1.1]].map(([x,z])=>box(pl[3],1,.04,.7,0xFFFFFF,x*.9,.2,z*.8));
+  let sel=1,ys=pl.map((_,i)=>i*.85);
+  $('b3').innerHTML=lay.map((l,i)=>`<button data-i="${i}">${l[0]}</button>`).join('');
+  const pick=i=>{sel=+i;glow(pl,false);glow([pl[sel]],true);$('d3').innerHTML=`<b>${lay[sel][0]}.</b> ${lay[sel][1]}`;
+    document.querySelectorAll('#b3 button').forEach(b=>b.classList.toggle('on',+b.dataset.i===sel));};
+  $('b3').onclick=e=>e.target.dataset.i&&pick(e.target.dataset.i);pick(1);
+  return{tick(t){G.rotation.y=t*.3+M.x;
+    pl.forEach((m,i)=>{const tgt=i*.85+(i>sel?.0:0)+(i===sel?.5:0);m.position.y+=(tgt-m.position.y)*.1;});
+    wins.forEach((w,i)=>w.position.y=.22+Math.sin(t*2+i)*.08);}};
+});
+
+/* ---------- Биты ---------- */
+const bits=[0,0,0,0,0,0,0,0];
+$('bits').innerHTML=bits.map((_,i)=>`<button class="bit" data-i="${i}" aria-label="бит ${128>>i}">0</button>`).join('');
+$('bits').onclick=e=>{const i=e.target.dataset.i;if(i===undefined)return;bits[i]^=1;draw();};
+function draw(){const v=parseInt(bits.join(''),2);
+  document.querySelectorAll('.bit').forEach((b,i)=>{b.textContent=bits[i];b.classList.toggle('on',bits[i]);});
+  $('vd').textContent=v;$('vo').textContent=v.toString(8);$('vh').textContent=v.toString(16).toUpperCase();}
+bits[1]=bits[3]=bits[7]=1;draw();
+
+/* ---------- Байт в 3D ---------- */
+stage('c1',(G,C)=>{
+  C.position.set(0,1.5,9.5);const cs=[];
+  for(let i=0;i<8;i++){cs.push(box(G,.8,.8,.8,0x2A3566,(i-3.5)*1.1,0,0));}
+  return{tick(t){G.rotation.x=.3+M.y*.4;G.rotation.y=Math.sin(t*.6)*.35+M.x*.8;
+    cs.forEach((m,i)=>{const on=bits[i];m.material.color.set(on?0x4DE1FF:0x2A3566);m.material.emissive.set(on?0x4DE1FF:0x000000);m.material.emissiveIntensity=on?.7:0;
+      m.position.y+=((on?.35:0)-m.position.y)*.12;});}};
+});
+/* ---------- Этапы информатики ---------- */
+const st=[['40–50-е','первые ЭВМ'],['60–70-е','языки, ОС, базы данных'],['80–90-е','персональные компьютеры'],['XXI век','интернет, ИИ, Big Data']];
+$('tl').innerHTML=st.map(s=>`<div class="on"><b>${s[0]}</b>${s[1]}</div>`).join('');
+</script>
+</body>
+</html>
